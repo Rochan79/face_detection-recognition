@@ -4,16 +4,11 @@ import dlib
 from skimage import io
 import cv2
 # Take the image file name from the command line
-#file_name = sys.argv[1]
 
 # Create a HOG face detector using the built-in dlib class
 face_detector = dlib.get_frontal_face_detector()
-image=cv2.imread('face.jpg')
-image= cv2.resize(image, (800,600 )) 
-#win = dlib.image_window()
-cv2.imshow('image',image)
-# Load the image into an array
-#image = io.imread(file_name)
+image=cv2.imread('image.jpg')
+
 
 # Run the HOG face detector on the image data.
 # The result will be the bounding boxes of the faces in our image.
@@ -30,13 +25,17 @@ for i, face_rect in enumerate(detected_faces):
 	# Detected faces are returned as an object with the coordinates 
 	# of the top, left, right and bottom edges
 	print("- Face #{} found at Left: {} Top: {} Right: {} Bottom: {}".format(i, face_rect.left(), face_rect.top(), face_rect.right(), face_rect.bottom()))
+	l=face_rect.left()
+	t=face_rect.top()
+	r=face_rect.right()
+	b=face_rect.bottom()
 
 	# Draw a box around each face we found
-	cv2.rectangle(image,(face_rect.left(),face_rect.top()),(face_rect.right(),face_rect.bottom()),(255,0,0),2)
+	cv2.rectangle(image,(t,l),(b,r),(0,255,0),2)
 	#win.add_overlay(face_rect)
-# Wait until the user hits <enter> to close the window	        
-#cv2.rectangle(img,(face_rect.left(),face_rect.top()),(face_rect.right(),face_rect.bottom()),(255,0,0),2)
+	        
+cv2.imshow('image',image)
 cv2.waitKey(0)
-#cv2.destroyAllWindows()
+# Wait until the user hits <enter> to close the window
 dlib.hit_enter_to_continue()
 cv2.destroyAllWindows()
