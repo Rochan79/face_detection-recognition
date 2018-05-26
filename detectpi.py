@@ -3,38 +3,21 @@
 import cv2
 size = 4
 webcam = cv2.VideoCapture(0) #Use camera 0
-
+(rval, im) = webcam.read()
 # We load the xml file
-classifier = cv2.CascadeClassifier('/home/rochan/Desktop/Project/haarcascade_frontalface_default.xml')
-#  Above line normalTest
-#classifier = cv2.CascadeClassifier('/home/rochan/Desktop/Project/haarcascade_frontalface_alt.xml') 
-#Above line test with different calulation
-#classifier = cv2.CascadeClassifier('haarcascade_frontalface_alt_tree.xml')
-#classifier = cv2.CascadeClassifier('lbpcascade_frontalface.xml')
+classifier = cv2.CascadeClassifier('/home/pi/Desktop/Project/face_detection-recognition-Raspberry_pi/haarcascade_frontalface_alt.xml')
 
+#Load a cascade file for detecting faces#Convert to grayscale
+gray = cv2.cvtColor(im,cv2.COLOR_BGR2GRAY)
 
-while True:
-    (rval, im) = webcam.read()
-    im=cv2.flip(im,1,0) #Flip to act as a mirror
+#Look for faces in the image using the loaded cascade file
+faces = classifier.detectMultiScale(gray, 1.1, 5)
 
-    # Resize the image to speed up detection
-    #mini = cv2.resize(im, (int(im.shape[1] / size),int( im.shape[0] / size))
+print "Found "
 
-    # detect MultiScale / faces 
-    faces = classifier.detectMultiScale(im)
+#Draw a rectangle around every found face
+for (x,y,w,h) in faces:
+    cv2.rectangle(im,(x,y),(x+w,y+h),(255,255,0),2)
 
-    # Draw rectangles around each face
-    for f in faces:
-        (x, y, w, h) = [v * size for v in f] #Scale the shapesize backup
-        cv2.rectangle(im, (x, y), (x + w, y + h),(0,255,0),thickness=4)
-        #Save just the rectangle faces in SubRecFaces
-        sub_face = im[y:y+h, x:x+w]
-        FaceFileName = "unknowfaces/face_" + str(y) + ".jpg"
-        cv2.imwrite(FaceFileName, sub_face)
-
-    # Show the image
-    cv2.imshow('Yeet image boi',   im)
-    key = cv2.waitKey(10)
-    # if Esc key is press then break out of the loop 
-    if key == 27: #The Esc key
-        break
+#Save the result image
+cv2.imwrite('result.jpg',im)
