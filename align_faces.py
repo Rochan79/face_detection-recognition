@@ -10,16 +10,21 @@ import dlib
 import cv2
 
 # construct the argument parser and parse the arguments
-
+ap = argparse.ArgumentParser()
+ap.add_argument("-p", "--shape-predictor", required=True,
+	help="path to facial landmark predictor")
+ap.add_argument("-i", "--image", required=True,
+	help="path to input image")
+args = vars(ap.parse_args())
 
 # initialize dlib's face detector (HOG-based) and then create
 # the facial landmark predictor and the face aligner
 detector = dlib.get_frontal_face_detector()
-predictor = dlib.shape_predictor('/home/rochan/Desktop/landmarking/shape_predictor_68_face_landmarks.dat')
+predictor = dlib.shape_predictor(args["shape_predictor"])
 fa = FaceAligner(predictor, desiredFaceWidth=256)
 
 # load the input image, resize it, and convert it to grayscale
-image = cv2.imread('example_01.jpg')
+image = cv2.imread(args["image"])
 image = imutils.resize(image, width=800)
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
@@ -27,7 +32,7 @@ gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 # image
 cv2.imshow("Input", image)
 rects = detector(gray, 2)
-
+i=0
 # loop over the face detections
 for rect in rects:
 	
@@ -38,9 +43,8 @@ for rect in rects:
 	faceOrig = imutils.resize(image[y:y + h, x:x + w], width=256)
 	faceAligned = fa.align(image, gray, rect)
 
-	import uuid
-	f = str(uuid.uuid4())
-	cv2.imwrite("aligned"+f + ".png", faceAligned)
+	cv2.imwrite("aligned_"+str(i) + ".png", faceAligned)
+	i=i+1
 
 	# display the output images
 	cv2.imshow("Original", faceOrig)
